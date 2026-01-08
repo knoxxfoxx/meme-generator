@@ -8,6 +8,107 @@ let topText = '';
 let bottomText = '';
 let fontSize = 40;
 let textColor = '#FFFFFF';
+let selectedTemplate = null;
+
+// Template images - will be loaded from templates.json
+let templateImages = [];
+
+// Initialize: Load templates from assets folder
+async function loadTemplates() {
+    const gallery = document.getElementById('templateGallery');
+    
+    if (!gallery) return;
+    
+    gallery.innerHTML = '<p style="color: rgba(255,255,255,0.5); font-size: 0.9em; text-align: center; padding: 20px;">Loading templates...</p>';
+    
+    // Try to load from templates.json
+    try {
+        const response = await fetch('assets/templates.json');
+        if (response.ok) {
+            const data = await response.json();
+            templateImages = data.templates || [];
+            console.log('Loaded templates:', templateImages);
+        } else {
+            console.error('Failed to load templates.json:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('Could not load templates.json:', error);
+        // Fallback: try to load templates.json with absolute path
+        try {
+            const response = await fetch('./assets/templates.json');
+            if (response.ok) {
+                const data = await response.json();
+                templateImages = data.templates || [];
+                console.log('Loaded templates (fallback):', templateImages);
+            }
+        } catch (fallbackError) {
+            console.error('Fallback also failed:', fallbackError);
+        }
+    }
+    
+    // Display templates
+    displayTemplates(gallery);
+}
+
+// Display templates in the gallery
+function displayTemplates(gallery) {
+    gallery.innerHTML = '';
+    
+    if (templateImages.length === 0) {
+        gallery.innerHTML = '<p style="color: rgba(255,255,255,0.5); font-size: 0.9em; text-align: center; padding: 20px;">No templates found. Add images to the assets folder and update assets/templates.json with their filenames.</p>';
+        return;
+    }
+    
+    console.log('Displaying', templateImages.length, 'templates');
+    
+    templateImages.forEach((imageName, index) => {
+        const templateItem = document.createElement('div');
+        templateItem.className = 'template-item';
+        templateItem.dataset.template = imageName;
+        
+        const img = document.createElement('img');
+        // Try multiple path variations
+        img.src = `assets/${imageName}`;
+        img.alt = `Template ${index + 1}`;
+        img.loading = 'lazy';
+        
+        img.onerror = function() {
+            console.error('Failed to load image:', imageName, 'from path:', img.src);
+            // Try alternative path
+            if (!img.src.includes('./')) {
+                img.src = `./assets/${imageName}`;
+            } else {
+                templateItem.style.display = 'none';
+            }
+        };
+        
+        img.onload = function() {
+            console.log('Successfully loaded image:', imageName);
+            templateItem.addEventListener('click', function() {
+                selectTemplate(imageName, templateItem);
+            });
+        };
+        
+        templateItem.appendChild(img);
+        gallery.appendChild(templateItem);
+    });
+}
+
+// Select a template
+function selectTemplate(imageName, element) {
+    // Remove active class from all templates
+    document.querySelectorAll('.template-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to selected template
+    if (element) {
+        element.classList.add('active');
+    }
+    
+    selectedTemplate = imageName;
+    loadImageFromUrl(`assets/${imageName}`);
+}
 
 // Load image from file upload
 document.getElementById('imageUpload').addEventListener('change', function(e) {
@@ -15,13 +116,18 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
     if (file) {
         const reader = new FileReader();
         reader.onload = function(event) {
+            // Clear template selection when uploading
+            document.querySelectorAll('.template-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            selectedTemplate = null;
             loadImageFromUrl(event.target.result);
         };
         reader.readAsDataURL(file);
     }
 });
 
-// Load image from file
+// Load image from URL (file or template)
 function loadImageFromUrl(url) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -132,4 +238,14 @@ document.getElementById('downloadBtn').addEventListener('click', function() {
         URL.revokeObjectURL(url);
     }, 'image/png');
 });
+
+// Initialize templates on page load
+loadTemplates();
+
+
+
+
+
+
+
 
