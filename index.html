@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎭 Meme Generator</h1>
+        </header>
+
+        <div class="image-selection">
+            <div class="upload-section">
+                <label for="imageUpload" class="upload-btn">📤 Upload Image</label>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="memeCanvas"></canvas>
+        </div>
+
+        <div class="controls-panel">
+            <div class="text-controls">
+                <div class="text-input-group">
+                    <label for="topText">Top Text:</label>
+                    <input type="text" id="topText" placeholder="Enter top text..." maxlength="50">
+                </div>
+                <div class="text-input-group">
+                    <label for="bottomText">Bottom Text:</label>
+                    <input type="text" id="bottomText" placeholder="Enter bottom text..." maxlength="50">
+                </div>
+                <div class="font-size-control">
+                    <label for="fontSize">Font Size: <span id="fontSizeValue">40</span>px</label>
+                    <input type="range" id="fontSize" min="20" max="240" value="40">
+                </div>
+                <div class="text-color-control">
+                    <label for="textColor">Text Color:</label>
+                    <input type="color" id="textColor" value="#FFFFFF">
+                </div>
+            </div>
+            <button id="downloadBtn" class="download-btn">💾 Download Meme</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
