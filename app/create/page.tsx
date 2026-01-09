@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/db';
 import { id } from '@instantdb/react';
@@ -10,7 +10,7 @@ import ImageUpload from '@/components/ImageUpload';
 import MemeToolbar from '@/components/MemeToolbar';
 import Auth from '@/components/Auth';
 
-export default function CreatePage() {
+function CreateMemeEditor() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading } = db.useAuth();
@@ -183,5 +183,23 @@ export default function CreatePage() {
         />
       </footer>
     </div>
+  );
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        color: 'white'
+      }}>
+        <p>Loading...</p>
+      </div>
+    }>
+      <CreateMemeEditor />
+    </Suspense>
   );
 }
