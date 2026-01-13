@@ -48,7 +48,7 @@ export default function MyMemesPage() {
       <h1 style={{ color: 'white', marginBottom: '2rem' }}>My Memes</h1>
       {memes.length === 0 ? (
         <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-          You haven't created any memes yet. Create your first meme!
+          Hello, please create a meme!
         </p>
       ) : (
         <div className="meme-grid">
